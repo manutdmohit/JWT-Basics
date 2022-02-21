@@ -31,10 +31,15 @@ exports.dashboard = async (req, res) => {
 
   const token = authHeader.split(' ')[1];
 
-  const luckyNumber = Math.floor(Math.random() * 100);
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const luckyNumber = Math.floor(Math.random() * 100);
 
-  res.status(200).json({
-    msg: `Hello, Ram`,
-    secret: `Here is your authorized data, your lucky number is ${luckyNumber}`,
-  });
+    res.status(200).json({
+      msg: `Hello, ${decoded.username}`,
+      secret: `Here is your authorized data, your lucky number is ${luckyNumber}.`,
+    });
+  } catch (error) {
+    throw new CustomAPIError('Unauthorized', 401);
+  }
 };
